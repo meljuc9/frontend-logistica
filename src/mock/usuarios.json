@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nombre": "Melanny Castro",
+    "email": "melanny@gmail.com",
+    "rol": "Administrador"
+  },
+  {
+    "id": 2,
+    "nombre": "Edwin Villota",
+    "email": "edwin@gmail.com",
+    "rol": "Operador"
+  },
+  {
+    "id": 3,
+    "nombre": "Carlos Pérez",
+    "email": "carlos@gmail.com",
+    "rol": "Repartidor"
+  }
+]
