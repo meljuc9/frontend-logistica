@@ -50,7 +50,7 @@ function Sidebar() {
             Pedidos
           </Link>
         </li>
-
+{/*
         <li className='mb-3'>
           <Link className='nav-link text-white sidebar-link' to='/crear-pedido'>
             <FaPlusCircle className='me-2' />
@@ -85,7 +85,7 @@ function Sidebar() {
             Historial
           </Link>
         </li>
-
+*/}
       </ul>
 
     </div>

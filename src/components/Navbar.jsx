@@ -13,6 +13,10 @@ function Navbar() {
 
   const navigate = useNavigate()
 
+  const usuario = JSON.parse(
+    localStorage.getItem('usuario')
+  )
+
   const cerrarSesion = () => {
 
     Swal.fire({
@@ -27,6 +31,7 @@ function Navbar() {
       if (result.isConfirmed) {
 
         localStorage.removeItem('token')
+        localStorage.removeItem('usuario')
 
         Swal.fire({
           icon: 'success',
@@ -119,13 +124,13 @@ function Navbar() {
             <div>
 
               <strong className='text-dark'>
-                Administrador
+                {usuario?.nombre || 'Administrador'}
               </strong>
 
               <br />
 
               <small className='text-muted'>
-                admin@gmail.com
+                {usuario?.email || 'admin@gmail.com'}
               </small>
 
             </div>

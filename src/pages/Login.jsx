@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import api from '../services/api'
 
 function Login() {
 
@@ -9,7 +10,7 @@ function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
 
     e.preventDefault()
 
@@ -24,21 +25,51 @@ function Login() {
       return
     }
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Bienvenido',
-      text: 'Inicio de sesión exitoso'
-    })
-    
-    localStorage.setItem('token', 'token_simulado')
+    try {
 
-    navigate('/dashboard')
+      const response = await api.post('/auth/login', {
+
+        email,
+        password
+
+      })
+
+      localStorage.setItem(
+        'token',
+        response.data.token
+      )
+
+      localStorage.setItem(
+        'usuario',
+        JSON.stringify(response.data.usuario)
+      )
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Bienvenido',
+        text: 'Inicio de sesión exitoso'
+      })
+
+      navigate('/dashboard')
+
+    }
+
+    catch(error){
+
+      Swal.fire({
+        icon:'error',
+        title:'Acceso denegado',
+        text:'Correo o contraseña incorrectos'
+      })
+
+    }
+
   }
 
   return (
 
     <div
-      className='d-flex justify-content-center align-items-center table-responsive'
+      className='d-flex justify-content-center align-items-center'
       style={{
         height: '100vh',
         background: 'linear-gradient(to right, #0f172a, #1e293b)'
@@ -89,7 +120,10 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button className='btn btn-dark w-100 p-3'>
+          <button
+            className='btn btn-dark w-100 p-3'
+            type='submit'
+          >
             Ingresar
           </button>
 

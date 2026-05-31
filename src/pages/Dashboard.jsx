@@ -1,331 +1,157 @@
+import { useEffect, useState } from 'react'
+
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 
-import {
-  FaBox,
-  FaTruck,
-  FaCheckCircle,
-  FaUsers
-} from 'react-icons/fa'
+import api from '../services/api'
 
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
+  PieChart,
+  Pie,
   Tooltip,
   Cell
 } from 'recharts'
 
-import { motion } from 'framer-motion'
+import {
+  FaUsers,
+  FaTruck,
+  FaClipboardList,
+  FaBoxes
+} from 'react-icons/fa'
 
 function Dashboard() {
 
-  const pedidos =
-    JSON.parse(localStorage.getItem('pedidos')) || []
+  const [indicadores, setIndicadores] = useState({
+    usuarios: 0,
+    totalPedidos: 0,
+    entregados: 0,
+    pendientes: 0,
+    enRuta: 0
+  })
 
-  const pendientes =
-    pedidos.filter(
-      p => p.estado === 'Pendiente'
-    ).length
+  useEffect(() => {
+    cargarDashboard()
+  }, [])
 
-  const transito =
-    pedidos.filter(
-      p => p.estado === 'En tránsito'
-    ).length
+  const cargarDashboard = async () => {
+    try {
+      const response = await api.get('/dashboard')
 
-  const entregados =
-    pedidos.filter(
-      p => p.estado === 'Entregado'
-    ).length
+      setIndicadores({
+        usuarios: response.data.usuarios || 0,
+        totalPedidos: response.data.totalPedidos || 0,
+        entregados: response.data.entregados || 0,
+        pendientes: response.data.pendientes || 0,
+        enRuta: response.data.enRuta || 0
+      })
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const data = [
-    {
-      name: 'Pendientes',
-      pedidos: pendientes
-    },
-    {
-      name: 'En tránsito',
-      pedidos: transito
-    },
-    {
-      name: 'Entregados',
-      pedidos: entregados
-    }
+    { name: 'Entregados', value: indicadores.entregados },
+    { name: 'Pendientes', value: indicadores.pendientes },
+    { name: 'En Ruta', value: indicadores.enRuta }
   ]
 
+  const COLORS = ['#22c55e', '#f59e0b', '#3b82f6']
+
   return (
-
-    <div className='table-responsive'
-      style={{
-        background: '#f1f5f9',
-        minHeight: '100vh'
-      }}
-    >
-
+    <div>
       <Navbar />
 
-      <div className='d-flex table-responsive'>
-
+      <div className='d-flex'>
         <Sidebar />
 
         <div className='container-fluid p-4'>
-
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-
-            <h1 className='fw-bold text-dark mb-2'>
-              Dashboard Empresarial
-            </h1>
-
-            <p className='text-muted mb-4'>
-              Control y monitoreo logístico en tiempo real
-            </p>
-
-          </motion.div>
+          <h1 className='fw-bold mb-4'>
+            Dashboard Ejecutivo
+          </h1>
 
           <div className='row'>
 
             <div className='col-md-3 mb-4'>
-
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                className='card border-0 shadow-lg'
-                style={{
-                  borderRadius: '22px',
-                  background:
-                    'linear-gradient(to right,#2563eb,#1d4ed8)',
-                  color: 'white'
-                }}
-              >
-
-                <div className='card-body p-4'>
-
-                  <div className='d-flex justify-content-between'>
-
-                    <div>
-
-                      <h6>Total Pedidos</h6>
-
-                      <h2 className='fw-bold'>
-                        {pedidos.length}
-                      </h2>
-
-                    </div>
-
-                    <FaBox size={45} />
-
-                  </div>
-
+              <div className='card border-0 shadow-lg rounded-4'>
+                <div className='card-body text-center'>
+                  <FaUsers size={40} className='text-primary mb-3' />
+                  <h2>{indicadores.usuarios}</h2>
+                  <p className='text-muted'>Usuarios</p>
                 </div>
-
-              </motion.div>
-
+              </div>
             </div>
 
             <div className='col-md-3 mb-4'>
-
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                className='card border-0 shadow-lg'
-                style={{
-                  borderRadius: '22px',
-                  background:
-                    'linear-gradient(to right,#f59e0b,#d97706)',
-                  color: 'white'
-                }}
-              >
-
-                <div className='card-body p-4'>
-
-                  <div className='d-flex justify-content-between'>
-
-                    <div>
-
-                      <h6>En tránsito</h6>
-
-                      <h2 className='fw-bold'>
-                        {transito}
-                      </h2>
-
-                    </div>
-
-                    <FaTruck size={45} />
-
-                  </div>
-
+              <div className='card border-0 shadow-lg rounded-4'>
+                <div className='card-body text-center'>
+                  <FaClipboardList size={40} className='text-success mb-3' />
+                  <h2>{indicadores.totalPedidos}</h2>
+                  <p className='text-muted'>Pedidos</p>
                 </div>
-
-              </motion.div>
-
+              </div>
             </div>
 
             <div className='col-md-3 mb-4'>
-
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                className='card border-0 shadow-lg'
-                style={{
-                  borderRadius: '22px',
-                  background:
-                    'linear-gradient(to right,#10b981,#059669)',
-                  color: 'white'
-                }}
-              >
-
-                <div className='card-body p-4'>
-
-                  <div className='d-flex justify-content-between'>
-
-                    <div>
-
-                      <h6>Entregados</h6>
-
-                      <h2 className='fw-bold'>
-                        {entregados}
-                      </h2>
-
-                    </div>
-
-                    <FaCheckCircle size={45} />
-
-                  </div>
-
+              <div className='card border-0 shadow-lg rounded-4'>
+                <div className='card-body text-center'>
+                  <FaTruck size={40} className='text-warning mb-3' />
+                  <h2>{indicadores.entregados}</h2>
+                  <p className='text-muted'>Entregados</p>
                 </div>
-
-              </motion.div>
-
+              </div>
             </div>
 
             <div className='col-md-3 mb-4'>
-
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                className='card border-0 shadow-lg'
-                style={{
-                  borderRadius: '22px',
-                  background:
-                    'linear-gradient(to right,#8b5cf6,#7c3aed)',
-                  color: 'white'
-                }}
-              >
-
-                <div className='card-body p-4'>
-
-                  <div className='d-flex justify-content-between'>
-
-                    <div>
-
-                      <h6>Usuarios</h6>
-
-                      <h2 className='fw-bold'>
-                        3
-                      </h2>
-
-                    </div>
-
-                    <FaUsers size={45} />
-
-                  </div>
-
+              <div className='card border-0 shadow-lg rounded-4'>
+                <div className='card-body text-center'>
+                  <FaBoxes size={40} className='text-danger mb-3' />
+                  <h2>{indicadores.pendientes}</h2>
+                  <p className='text-muted'>Pendientes</p>
                 </div>
-
-              </motion.div>
-
+              </div>
             </div>
 
           </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-
-            <div
-              className='card border-0 shadow-lg mt-4'
-              style={{
-                borderRadius: '22px'
-              }}
-            >
-
-              <div className='card-body p-4'>
-
-                <h4 className='fw-bold mb-4'>
-                  Estadísticas Logísticas
-                </h4>
-
-                <p className='text-muted'>
-                  Monitoreo de estados logísticos en tiempo real
-                </p>
-
-                <ResponsiveContainer width='100%' height={350}>
-                  <BarChart
-                    data={data}
-                    barSize={70}
-                  >
-
-                    <XAxis
-                      dataKey='name'
-                      stroke='#64748b'
-                      tick={{
-                        fontSize: 14,
-                        fontWeight: 600
-                      }}
-                    />
-
-                    <YAxis
-                      stroke='#64748b'
-                      tick={{
-                        fontSize: 13
-                      }}
-                    />
-
-                    <Tooltip
-                      cursor={{
-                        fill:'rgba(0,0,0,0.05)'
-                      }}
-                      contentStyle={{
-                        background:'#ffffff',
-                        borderRadius:'16px',
-                        border:'none',
-                        boxShadow:'0 8px 25px rgba(0,0,0,0.15)',
-                        padding:'12px'
-                      }}
-                      labelStyle={{
-                        color:'#0f172a',
-                        fontWeight:'bold'
-                      }}
-                    />
-
-                    <Bar
-                      dataKey='pedidos'
-                      radius={[14,14,0,0]}
-                    >
-
-                      <Cell fill='#3b82f6' />
-
-                      <Cell fill='#f59e0b' />
-
-                      <Cell fill='#10b981' />
-
-                    </Bar>
-
-                  </BarChart>
-                </ResponsiveContainer>
-
+          <div className='row'>
+            <div className='col-md-4 mb-4'>
+              <div className='card border-0 shadow-lg rounded-4'>
+                <div className='card-body text-center'>
+                  <FaTruck size={40} className='text-info mb-3' />
+                  <h2>{indicadores.enRuta}</h2>
+                  <p className='text-muted'>En Ruta</p>
+                </div>
               </div>
+            </div>
+          </div>
+
+          <div className='card border-0 shadow-lg rounded-4 mt-3'>
+            <div className='card-body'>
+              <h4 className='mb-4'>Distribución de Pedidos</h4>
+
+              <PieChart width={500} height={300}>
+                <Pie
+                  data={data}
+                  dataKey='value'
+                  outerRadius={120}
+                  label
+                >
+                  {
+                    data.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index]} />
+                    ))
+                  }
+                </Pie>
+
+                <Tooltip />
+              </PieChart>
 
             </div>
-
-          </motion.div>
+          </div>
 
         </div>
-
       </div>
-
     </div>
   )
 }
